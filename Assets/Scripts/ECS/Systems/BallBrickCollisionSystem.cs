@@ -15,12 +15,14 @@ namespace Brick_n_Balls.ECS.Systems
     {
         private ComponentLookup<BallTag> _ballLookup;
         private ComponentLookup<BrickTag> _brickLookup;
+        private ComponentLookup<BrickHitFlag> _hitLookup;
 
         [BurstCompile]
         private struct BallBrickCollisionJob : ICollisionEventsJob
         {
             [ReadOnly] public ComponentLookup<BallTag> BallLookup;
             [ReadOnly] public ComponentLookup<BrickTag> BrickLookup;
+            [ReadOnly] public ComponentLookup<BrickHitFlag> HitLookup;
 
             public EntityCommandBuffer Ecb;
 
@@ -38,7 +40,9 @@ namespace Brick_n_Balls.ECS.Systems
                 Entity otherEntity = aIsBall ? entityB : entityA;
 
                 if (!BrickLookup.HasComponent(otherEntity)) return; // excluding non-brick collision
-                
+
+                if (HitLookup.HasComponent(otherEntity)) return;
+
                 Ecb.AddComponent<BrickHitFlag>(otherEntity); // tag as hit
                 // notify +1 point in score manager
                 Debug.Log($"[BallBrickCollisionSystem] Ball {ballEntity.Index} hit brick {otherEntity.Index} – added BrickHitFlag.");
@@ -52,6 +56,7 @@ namespace Brick_n_Balls.ECS.Systems
 
             _ballLookup = state.GetComponentLookup<BallTag>(isReadOnly: true);
             _brickLookup = state.GetComponentLookup<BrickTag>(isReadOnly: true);
+            _hitLookup = state.GetComponentLookup<BrickHitFlag>(isReadOnly: true);
         }
 
         public void OnDestroy(ref SystemState state) { }
@@ -64,11 +69,13 @@ namespace Brick_n_Balls.ECS.Systems
 
             _ballLookup.Update(ref state);
             _brickLookup.Update(ref state);
+            _hitLookup.Update(ref state);
 
             var job = new BallBrickCollisionJob
             {
                 BallLookup = _ballLookup,
                 BrickLookup = _brickLookup,
+                HitLookup = _hitLookup,
                 Ecb = ecb
             };
 
