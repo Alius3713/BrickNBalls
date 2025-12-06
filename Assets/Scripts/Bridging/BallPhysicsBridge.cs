@@ -19,7 +19,13 @@ namespace Brick_n_Balls.Bridging
                 AddComponent<BallTag>(entity);
                 AddComponent(entity, new DestroyOnFall { YLimit = authoring.yDestroyLimit });
 
+                AddComponentObject(entity, authoring); // MonoBehaviour managed component attached to this entity
             }
+        }
+
+        public void HandleBallDestroyed()
+        {
+            Destroy(gameObject);
         }
     }
 }

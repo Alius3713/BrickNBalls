@@ -46,7 +46,7 @@ namespace Brick_n_Balls.ECS.Systems
 
                 if (health.Value <= 0)
                 {
-                    Ecb.DestroyEntity(otherEntity);
+                    Ecb.AddComponent<BrickDestroyFlag>(otherEntity); // tag as to destroy
                     // notify +1 point in score manager
                 }
             }

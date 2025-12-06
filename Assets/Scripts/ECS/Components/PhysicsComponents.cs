@@ -27,4 +27,14 @@ namespace Brick_n_Balls.ECS.Components
     {
         public float YLimit;
     }
+
+    public struct BrickDestroyFlag : IComponentData
+    {
+
+    }
+
+    public struct BallDestroyFlag : IComponentData
+    {
+
+    }
 }

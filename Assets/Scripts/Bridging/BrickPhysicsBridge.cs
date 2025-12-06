@@ -18,7 +18,14 @@ namespace Brick_n_Balls.Bridging
 
                 AddComponent<BrickTag>(entity);
                 AddComponent(entity, new BrickHealth { Value = Mathf.Clamp(authoring.maxHealth, 1, 3) });
+
+                AddComponentObject(entity, authoring); // MonoBehaviour managed component attached to this entity
             }
+        }
+
+        public void HandleBrickDestroyed()
+        {
+            Destroy(gameObject);
         }
     }
 }

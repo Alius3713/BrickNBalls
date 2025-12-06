@@ -29,8 +29,7 @@ namespace Brick_n_Balls.ECS.Systems
             {
                 if (transform.ValueRO.Position.y < destroyOnFall.ValueRO.YLimit)
                 {
-                    ecb.DestroyEntity(entity);
-                    // notify for game manager that ball was destroyed
+                    ecb.AddComponent<BallDestroyFlag>(entity); // tag as to destroy
                 }
             }
 
