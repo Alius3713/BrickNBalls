@@ -17,6 +17,7 @@ namespace Brick_n_Balls.Core
         private int _activeBalls;
         private GameState _gameState;
 
+        public GameState State => _gameState;
         public static GameManager Instance {  get; private set; }
 
         private void Awake()
@@ -54,9 +55,7 @@ namespace Brick_n_Balls.Core
 
             if (_activeBalls <= 0 && _shotsLeft <= 0)
             {
-                _gameState = GameState.GameOver;
-
-                // notify UI to show popup window
+                _gameState = GameState.GameOver; // notify UI to show popup window
             }
         }
 
@@ -76,6 +75,13 @@ namespace Brick_n_Balls.Core
         public int GetShotsLeft()
         {
             return _shotsLeft;
+        }
+
+        public void GoToMenu()
+        {
+            _gameState = GameState.Menu;
+            _shotsLeft = _maxShots;
+            _activeBalls = 0;
         }
     }
 }
