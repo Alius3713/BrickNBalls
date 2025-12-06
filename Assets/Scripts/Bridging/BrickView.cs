@@ -1,3 +1,4 @@
+using Brick_n_Balls.Core;
 using UnityEngine;
 
 namespace Brick_n_Balls.Bridging
@@ -16,6 +17,8 @@ namespace Brick_n_Balls.Bridging
         public void ApplyHit()
         {
             _currentHealth--;
+
+            ScoreManager.Instance?.AddScore(1);
 
             if( _currentHealth <= 0)
             {

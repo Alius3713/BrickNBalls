@@ -10,7 +10,7 @@ namespace Brick_n_Balls.ECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<BrickDestroyFlag>();
+            state.RequireForUpdate<BrickHitFlag>();
         }
 
         public void OnDestroy(ref SystemState state) { }
@@ -20,12 +20,11 @@ namespace Brick_n_Balls.ECS.Systems
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             var entityManager = state.EntityManager;
 
-            foreach (var (_, entity) in SystemAPI.Query<RefRO<BrickDestroyFlag>>().WithEntityAccess())
+            foreach (var (_, entity) in SystemAPI.Query<RefRO<BrickHitFlag>>().WithEntityAccess())
             {
-                var bridge = entityManager.GetComponentObject<BrickPhysicsBridge>(entity);
-                bridge.HandleBrickDestroyed();
+                var brickView = entityManager.GetComponentObject<BrickView>(entity);
 
-                // score add in score manager
+                brickView.ApplyHit(); // score add in score manager
 
                 ecb.DestroyEntity(entity);
             }

@@ -18,17 +18,12 @@ namespace Brick_n_Balls.ECS.Components
 
     }
 
-    public struct BrickHealth : IComponentData
-    {
-        public int Value;
-    }
-
     public struct DestroyOnFall : IComponentData
     {
         public float YLimit;
     }
 
-    public struct BrickDestroyFlag : IComponentData
+    public struct BrickHitFlag : IComponentData
     {
 
     }

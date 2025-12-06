@@ -14,14 +14,12 @@ namespace Brick_n_Balls.ECS.Systems
     {
         private ComponentLookup<BallTag> _ballLookup;
         private ComponentLookup<BrickTag> _brickLookup;
-        private ComponentLookup<BrickHealth> _brickHealthLookup;
 
         [BurstCompile]
         private struct BallBrickCollisionJob : ICollisionEventsJob
         {
             [ReadOnly] public ComponentLookup<BallTag> BallLookup;
-            public ComponentLookup<BrickTag> BrickLookup;
-            public ComponentLookup<BrickHealth> BrickHealthLookup;
+            [ReadOnly] public ComponentLookup<BrickTag> BrickLookup;
 
             public EntityCommandBuffer Ecb;
 
@@ -38,17 +36,10 @@ namespace Brick_n_Balls.ECS.Systems
                 Entity ballEntity = aIsBall ? entityA : entityB;
                 Entity otherEntity = aIsBall ? entityB : entityA;
 
-                if (!BrickLookup.HasComponent(otherEntity) || !BrickHealthLookup.HasComponent(otherEntity)) return; // excluding non-brick collision
-
-                BrickHealth health = BrickHealthLookup[otherEntity];
-                health.Value -= 1;
-                BrickHealthLookup[otherEntity] = health;
-
-                if (health.Value <= 0)
-                {
-                    Ecb.AddComponent<BrickDestroyFlag>(otherEntity); // tag as to destroy
-                    // notify +1 point in score manager
-                }
+                if (!BrickLookup.HasComponent(otherEntity)) return; // excluding non-brick collision
+                
+                Ecb.AddComponent<BrickHitFlag>(otherEntity); // tag as hit
+                // notify +1 point in score manager
             }
         }
 
@@ -58,8 +49,7 @@ namespace Brick_n_Balls.ECS.Systems
             state.RequireForUpdate<PhysicsWorldSingleton>();
 
             _ballLookup = state.GetComponentLookup<BallTag>(isReadOnly: true);
-            _brickLookup = state.GetComponentLookup<BrickTag>(isReadOnly: false);
-            _brickHealthLookup = state.GetComponentLookup<BrickHealth>(isReadOnly: false);
+            _brickLookup = state.GetComponentLookup<BrickTag>(isReadOnly: true);
         }
 
         public void OnDestroy(ref SystemState state) { }
@@ -72,13 +62,11 @@ namespace Brick_n_Balls.ECS.Systems
 
             _ballLookup.Update(ref state);
             _brickLookup.Update(ref state);
-            _brickHealthLookup.Update(ref state);
 
             var job = new BallBrickCollisionJob
             {
                 BallLookup = _ballLookup,
                 BrickLookup = _brickLookup,
-                BrickHealthLookup = _brickHealthLookup,
                 Ecb = ecb
             };
 

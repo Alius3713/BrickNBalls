@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 568928642100248784}
   - component: {fileID: 5773980093547395024}
   - component: {fileID: 1024076136755365380}
+  - component: {fileID: 967803738223072723}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Untagged
@@ -150,3 +151,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   yDestroyLimit: -5
+  _ballView: {fileID: 967803738223072723}
+--- !u!114 &967803738223072723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5964551158741872860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccb59d587ff6fea4a86fae18e7034f4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -10,15 +10,9 @@ namespace Brick_n_Balls.ECS.Systems
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct BallOutOfBoundsSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
-        {
+        public void OnCreate(ref SystemState state) { }
 
-        }
-
-        public void OnDestroy(ref SystemState state)
-        {
-
-        }
+        public void OnDestroy(ref SystemState state) { }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
@@ -29,7 +23,10 @@ namespace Brick_n_Balls.ECS.Systems
             {
                 if (transform.ValueRO.Position.y < destroyOnFall.ValueRO.YLimit)
                 {
-                    ecb.AddComponent<BallDestroyFlag>(entity); // tag as to destroy
+                    if (!state.EntityManager.HasComponent<BallDestroyFlag>(entity))
+                    {
+                        ecb.AddComponent<BallDestroyFlag>(entity); // tag as to destroy
+                    }
                 }
             }
 

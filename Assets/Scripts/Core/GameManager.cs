@@ -17,8 +17,18 @@ namespace Brick_n_Balls.Core
         private int _activeBalls;
         private GameState _gameState;
 
+        public static GameManager Instance {  get; private set; }
+
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
             _shotsLeft = _maxShots;
             _activeBalls = 0;
             _gameState = GameState.Menu;

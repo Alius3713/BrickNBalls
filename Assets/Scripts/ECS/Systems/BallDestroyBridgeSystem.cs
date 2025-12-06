@@ -6,6 +6,7 @@ using Unity.Entities;
 namespace Brick_n_Balls.ECS.Systems
 {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(BallOutOfBoundsSystem))]
     public partial struct BallDestroyBridgeSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -22,10 +23,17 @@ namespace Brick_n_Balls.ECS.Systems
 
             foreach (var (_, entity) in SystemAPI.Query<RefRO<BallDestroyFlag>>().WithEntityAccess())
             {
-                var bridge = entityManager.GetComponentObject<BallPhysicsBridge>(entity);
-                bridge.HandleBallDestroyed();
+                if (!entityManager.HasComponent<BallView>(entity))
+                {
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
 
-                // GameManager.Instance.OnBallDestroyed();
+                var ballView = entityManager.GetComponentObject<BallView>(entity);
+                if (ballView != null)
+                {
+                    ballView.HandleOutOfBounds(); // GameManager.Instance.OnBallDestroyed();
+                }
 
                 ecb.DestroyEntity(entity);
             }

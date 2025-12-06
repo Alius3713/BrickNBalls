@@ -8,6 +8,19 @@ namespace Brick_n_Balls.Core
 
         public int Score => _score;
 
+        public static ScoreManager Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
         public void ResetScore()
         {
             _score = 0;

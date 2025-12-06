@@ -7,8 +7,7 @@ namespace Brick_n_Balls.Bridging
     [DisallowMultipleComponent]
     public class BrickPhysicsBridge : MonoBehaviour
     {
-        [Range(1, 3)]
-        public int maxHealth = 3;
+        [SerializeField] private BrickView _brickView;
 
         class Baker : Baker<BrickPhysicsBridge>
         {
@@ -17,15 +16,12 @@ namespace Brick_n_Balls.Bridging
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent<BrickTag>(entity);
-                AddComponent(entity, new BrickHealth { Value = Mathf.Clamp(authoring.maxHealth, 1, 3) });
 
-                AddComponentObject(entity, authoring); // MonoBehaviour managed component attached to this entity
+                if (authoring._brickView != null)
+                {
+                    AddComponentObject(entity, authoring._brickView); // MonoBehaviour managed component attached to this entity
+                }
             }
-        }
-
-        public void HandleBrickDestroyed()
-        {
-            Destroy(gameObject);
         }
     }
 }
