@@ -1,5 +1,8 @@
 using Brick_n_Balls.ECS.Components;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Physics;
+using Unity.Physics.Extensions;
 using UnityEngine;
 
 namespace Brick_n_Balls.Bridging
@@ -24,7 +27,7 @@ namespace Brick_n_Balls.Bridging
                 if (authoring._ballView != null)
                 {
                     AddComponentObject(entity, authoring._ballView); // MonoBehaviour managed component attached to this entity
-                }
+                } 
             }
         }
     }

@@ -7,7 +7,7 @@ namespace Brick_n_Balls.Bridging
     {
         private void Start()
         {
-            GameManager.Instance?.OnBallSpawned();  
+            GameManager.Instance?.OnBallSpawned();
         }
 
         public void HandleOutOfBounds()

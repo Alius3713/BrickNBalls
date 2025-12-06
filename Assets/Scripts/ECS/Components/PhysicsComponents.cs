@@ -32,4 +32,9 @@ namespace Brick_n_Balls.ECS.Components
     {
 
     }
+
+    public struct BallPrefabData : IComponentData
+    {
+        public Entity Prefab;
+    }
 }
