@@ -21,6 +21,7 @@ MemoryCaptures/
 *.pidb.meta
 *.svd
 
+
 # Rider
 .idea/
 *.DotSettings.user
