@@ -119,7 +119,6 @@ namespace Brick_n_Balls.UI
 
         public void OnStartGameClicked()
         {
-            //Debug.Log("[UIRoot] Start Game clicked");
             if (!_initialized)
             {
                 return;

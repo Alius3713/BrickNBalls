@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Collections;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using UnityEngine;
 
 namespace Brick_n_Balls.ECS.Systems
 {
@@ -40,6 +41,7 @@ namespace Brick_n_Balls.ECS.Systems
                 
                 Ecb.AddComponent<BrickHitFlag>(otherEntity); // tag as hit
                 // notify +1 point in score manager
+                Debug.Log($"[BallBrickCollisionSystem] Ball {ballEntity.Index} hit brick {otherEntity.Index} – added BrickHitFlag.");
             }
         }
 

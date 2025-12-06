@@ -457,6 +457,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2052572267}
+  - component: {fileID: 2052572268}
   m_Layer: 0
   m_Name: BallShooter
   m_TagString: Untagged
@@ -480,6 +481,21 @@ Transform:
   - {fileID: 617010481}
   m_Father: {fileID: 750493753}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2052572268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2052572266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 842ba653e4fc86d44a7e7d90405b88b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnPoint: {fileID: 617010481}
+  _initialSpeed: 20
+  _shootActionName: Attack
 --- !u!1 &2078134783
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,7 +682,7 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 838523774}
   - {fileID: 2098714682}
   - {fileID: 450655016}
   - {fileID: 750493753}
+  - {fileID: 838523774}

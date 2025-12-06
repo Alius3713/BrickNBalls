@@ -18,6 +18,9 @@ namespace Brick_n_Balls.Core
         private GameState _gameState;
 
         public GameState State => _gameState;
+        public int ShotsLeft => _shotsLeft;
+        public int ActiveBalls => _activeBalls;
+
         public static GameManager Instance {  get; private set; }
 
         private void Awake()
@@ -37,26 +40,38 @@ namespace Brick_n_Balls.Core
 
         public void StartGame()
         {
+            _gameState = GameState.Playing;
             _shotsLeft = _maxShots;
             _activeBalls = 0;
-            _gameState = GameState.Playing;
 
             // Later content...
         }
 
         public void OnBallSpawned()
         {
-            _activeBalls++;
+            if (_gameState != GameState.Playing) return;
+
+                _activeBalls++;
+            Debug.Log($"[GameManager] Ball spawned. ActiveBalls = {_activeBalls}, ShotsLeft = {_shotsLeft}");
         }
 
         public void OnBallDestroyed()
         {
-            _activeBalls--;
+            if (_activeBalls > 0) _activeBalls--;
+            Debug.Log($"[GameManager] Ball destroyed. ActiveBalls = {_activeBalls}, ShotsLeft = {_shotsLeft}");
 
-            if (_activeBalls <= 0 && _shotsLeft <= 0)
+            if (_gameState != GameState.Playing) return;
+
+            if (_activeBalls == 0 && _shotsLeft == 0)
             {
-                _gameState = GameState.GameOver; // notify UI to show popup window
+                GameOver(); // notify UI to show popup window
             }
+        }
+
+        private void GameOver()
+        {
+            _gameState = GameState.GameOver;
+            Debug.Log("[GameManager] GAME OVER");
         }
 
         public bool CanShoot()

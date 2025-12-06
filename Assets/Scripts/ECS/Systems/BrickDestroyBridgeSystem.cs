@@ -2,6 +2,7 @@ using Brick_n_Balls.Bridging;
 using Brick_n_Balls.ECS.Components;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace Brick_n_Balls.ECS.Systems
 {
@@ -22,14 +23,31 @@ namespace Brick_n_Balls.ECS.Systems
 
             foreach (var (_, entity) in SystemAPI.Query<RefRO<BrickHitFlag>>().WithEntityAccess())
             {
+                if (!entityManager.HasComponent<BrickView>(entity))
+                {
+                    Debug.LogWarning("[BrickDestroyBridgeSystem] Entity with BrickHitFlag has no BrickView – removing flag.");
+                    ecb.RemoveComponent<BrickHitFlag>(entity);
+                    continue;
+                }
+
                 var brickView = entityManager.GetComponentObject<BrickView>(entity);
 
-                brickView.ApplyHit(); // score add in score manager
+                bool destroyed = brickView.ApplyHit();
 
-                ecb.DestroyEntity(entity);
+                if (destroyed)
+                {
+                    Debug.Log("[BrickDestroyBridgeSystem] Brick died, destroying ECS entity.");
+                    ecb.DestroyEntity(entity);
+                }
+                else
+                {
+                    Debug.Log("[BrickDestroyBridgeSystem] Brick survived hit, clearing BrickHitFlag.");
+                    ecb.RemoveComponent<BrickHitFlag>(entity);
+                }
             }
 
-            ecb.Playback(state.EntityManager);
+            ecb.Playback(entityManager);
+            ecb.Dispose();
         }
 
     }

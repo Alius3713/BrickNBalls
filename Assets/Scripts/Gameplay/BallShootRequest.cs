@@ -28,19 +28,13 @@ namespace Brick_n_Balls.Gameplay
             _shootAction = InputSystem.actions?.FindAction(_shootActionName);
             if (_shootAction == null)
             {
-                Debug.LogError($"[BallShooter] InputAction '{_shootActionName}' not found.");
+                Debug.LogError($"[BallShootRequest] InputAction '{_shootActionName}' not found.");
             }
 
-            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-            var query = _entityManager.CreateEntityQuery(ComponentType.ReadOnly<BallPrefabData>());
-
-            if (query.IsEmpty) return; // _ballPrefab set check
-
-            var holderEntity = query.GetSingletonEntity();
-            var data = _entityManager.GetComponentData<BallPrefabData>(holderEntity);
-            _ballPrefabEntity = data.Prefab;
-
+            if (World.DefaultGameObjectInjectionWorld != null)
+            {
+                _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            }
         }
 
         private void OnEnable()
@@ -54,33 +48,76 @@ namespace Brick_n_Balls.Gameplay
 
         private void OnDisable()
         {
-            if ( _shootAction != null)
+            if (_shootAction != null)
             {
                 _shootAction.performed -= OnShootPerformed;
                 _shootAction.Disable();
             }
         }
 
+        /// <summary> Lazy resolve BallPrefabData </summary>
+        private bool TryResolveBallPrefab()
+        {
+            if (_ballPrefabEntity != Entity.Null)
+                return true;
+
+            if (World.DefaultGameObjectInjectionWorld == null)
+            {
+                Debug.LogWarning("[BallShootRequest] World.DefaultGameObjectInjectionWorld is null – ECS world jeszcze nie istnieje.");
+                return false;
+            }
+
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            var query = _entityManager.CreateEntityQuery(ComponentType.ReadOnly<BallPrefabData>());
+            if (query.IsEmpty)
+            {
+                Debug.LogWarning("[BallShootRequest] BallPrefabData not found yet. Czy SubScene z SpawnPointBridge + BallPrefab jest za³adowana?");
+                return false;
+            }
+
+            var holderEntity = query.GetSingletonEntity();
+            var data = _entityManager.GetComponentData<BallPrefabData>(holderEntity);
+            _ballPrefabEntity = data.Prefab;
+
+            Debug.Log($"[BallShootRequest] Resolved BallPrefab entity: {_ballPrefabEntity.Index}");
+            return true;
+        }
+
         private void OnShootPerformed(InputAction.CallbackContext ctx)
         {
-            //if (_ballPrefabEntity == Entity.Null) return;
+            
+            var gameManager = GameManager.Instance;
+            if (gameManager != null && !gameManager.CanShoot())
+            {
+                Debug.Log("[BallShootRequest] Cannot shoot – GameManager.CanShoot() == false.");
+                return;
+            }
+
+            if (!TryResolveBallPrefab())
+            {
+                Debug.LogWarning("[BallShootRequest] Cannot shoot – BallPrefabEntity not resolved yet.");
+                return;
+            }
 
             var ballEntity = _entityManager.Instantiate(_ballPrefabEntity);
 
-            var spawnPos = _spawnPoint != null ? _spawnPoint.position : transform.position;
-            var spawnRot = _spawnPoint != null ? _spawnPoint.rotation : transform.rotation;
+            float3 spawnPos = _spawnPoint != null ? (float3)_spawnPoint.position : (float3)transform.position;
+            Quaternion spawnRot = _spawnPoint != null ? _spawnPoint.rotation : transform.rotation;
 
             var lt = LocalTransform.FromPositionRotationScale(spawnPos, spawnRot, 1f);
-
             _entityManager.SetComponentData(ballEntity, lt);
 
             if (_entityManager.HasComponent<PhysicsVelocity>(ballEntity))
             {
                 float3 dir = math.normalize((float3)(_spawnPoint != null ? _spawnPoint.up : transform.up));
+
                 var vel = _entityManager.GetComponentData<PhysicsVelocity>(ballEntity);
                 vel.Linear = dir * _initialSpeed;
                 _entityManager.SetComponentData(ballEntity, vel);
             }
+            
+            gameManager?.ConsumeShot();
         }
     }
 }

@@ -14,17 +14,22 @@ namespace Brick_n_Balls.Bridging
             _currentHealth = _maxHealth;
         }
 
-        public void ApplyHit()
+        public bool ApplyHit()
         {
             _currentHealth--;
 
             ScoreManager.Instance?.AddScore(1);
+            Debug.Log($"[BrickView] Hit! HP now = {_currentHealth}");
 
-            if( _currentHealth <= 0)
+            if ( _currentHealth <= 0)
             {
+                Debug.Log("[BrickView] Destroying brick GameObject");
                 //notify ECS / destroy entity
                 Destroy(gameObject);
+                return true;
             }
+
+            return false;
         }
     }
 }

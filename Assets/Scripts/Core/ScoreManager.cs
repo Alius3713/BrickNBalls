@@ -29,6 +29,7 @@ namespace Brick_n_Balls.Core
         public void AddScore(int amount)
         {
             _score += amount;
+            Debug.Log($"[ScoreManager] Score = {_score}");
         }
     }
 }
