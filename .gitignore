@@ -1,0 +1,35 @@
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+
+# Visual Studio cache
+.vs/
+*.sln
+*.csproj
+*.unityproj
+*.db
+*.opendb
+
+# Auto-generated
+*.pidb
+*.booproj
+*.pidb.meta
+*.svd
+
+# Rider
+.idea/
+*.DotSettings.user
+
+# Addressables
+/[Aa]ssets/[Aa]ddressable[Aa]ssetsData/*/*.bin*
+
+# Burst
+[Bb]urstDebugInformation_DoNotShip/
+
+# Crash logs
+sysinfo.txt
