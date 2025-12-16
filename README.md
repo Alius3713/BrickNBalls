@@ -32,7 +32,7 @@ Brick-breaker style prototype made for a technical test assignment.
 
 - **Unity Entities + Unity Physics (ECS) used for physics only**
 
-- UI in separate scene: 'UIScene' (TMP)
+- UI in separate scene: `UIScene` (TMP)
 
 - Build: IL2CPP, max stripping/optimizations
 
