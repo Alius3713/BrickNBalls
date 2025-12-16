@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8119307602893713190}
   - component: {fileID: 4427144126865961384}
   - component: {fileID: 1024076136755365380}
-  - component: {fileID: 967803738223072723}
   - component: {fileID: 3442679284453031675}
   - component: {fileID: 5679448594206455753}
   m_Layer: 0
@@ -103,19 +102,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   yDestroyLimit: -5
-  _ballView: {fileID: 967803738223072723}
---- !u!114 &967803738223072723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5964551158741872860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccb59d587ff6fea4a86fae18e7034f4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3442679284453031675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,7 +203,7 @@ MonoBehaviour:
     m_Template: {fileID: 0}
     m_CollisionResponse:
       m_Override: 0
-      m_Value: 0
+      m_Value: 1
     m_DetailedStaticMeshCollision:
       m_Override: 0
       m_Value:

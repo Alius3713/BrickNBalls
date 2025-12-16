@@ -23,7 +23,7 @@ namespace Brick_n_Balls.ECS.Components
         public float YLimit;
     }
 
-    public struct BrickHitFlag : IComponentData
+    public struct BrickHitFlag : IComponentData, IEnableableComponent
     {
 
     }
@@ -34,6 +34,11 @@ namespace Brick_n_Balls.ECS.Components
     }
 
     public struct BallPrefabData : IComponentData
+    {
+        public Entity Prefab;
+    }
+
+    public struct BrickPrefabData : IComponentData
     {
         public Entity Prefab;
     }

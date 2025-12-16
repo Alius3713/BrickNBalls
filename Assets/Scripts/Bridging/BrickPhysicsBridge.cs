@@ -7,8 +7,6 @@ namespace Brick_n_Balls.Bridging
     [DisallowMultipleComponent]
     public class BrickPhysicsBridge : MonoBehaviour
     {
-        [SerializeField] private BrickView _brickView;
-
         class Baker : Baker<BrickPhysicsBridge>
         {
             public override void Bake(BrickPhysicsBridge authoring)
@@ -16,11 +14,6 @@ namespace Brick_n_Balls.Bridging
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent<BrickTag>(entity);
-
-                if (authoring._brickView != null)
-                {
-                    AddComponentObject(entity, authoring._brickView); // MonoBehaviour managed component attached to this entity
-                }
             }
         }
     }

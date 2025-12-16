@@ -1,3 +1,4 @@
+using Brick_n_Balls.Gameplay;
 using UnityEngine;
 
 namespace Brick_n_Balls.Core
@@ -22,6 +23,7 @@ namespace Brick_n_Balls.Core
         public int ActiveBalls => _activeBalls;
 
         public static GameManager Instance {  get; private set; }
+        public int RoundId { get; private set; }
 
         private void Awake()
         {
@@ -40,11 +42,11 @@ namespace Brick_n_Balls.Core
 
         public void StartGame()
         {
+            RoundId++;
             _gameState = GameState.Playing;
+            FindFirstObjectByType<BrickSpawnRequest>()?.SpawnForNewGame();
             _shotsLeft = _maxShots;
             _activeBalls = 0;
-
-            // Later content...
         }
 
         public void OnBallSpawned()
@@ -95,6 +97,7 @@ namespace Brick_n_Balls.Core
         public void GoToMenu()
         {
             _gameState = GameState.Menu;
+            FindFirstObjectByType<GameplayEventPump>()?.ResetRound();
             _shotsLeft = _maxShots;
             _activeBalls = 0;
         }

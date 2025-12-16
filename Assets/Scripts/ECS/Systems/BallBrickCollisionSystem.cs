@@ -8,26 +8,28 @@ using UnityEngine;
 
 namespace Brick_n_Balls.ECS.Systems
 {
-    [BurstCompile]
     [UpdateInGroup(typeof(PhysicsSystemGroup))]
     [UpdateAfter(typeof(PhysicsSimulationGroup))] // after simulation when collision events are ready 
     public partial struct BallBrickCollisionSystem : ISystem
     {
         private ComponentLookup<BallTag> _ballLookup;
         private ComponentLookup<BrickTag> _brickLookup;
-        private ComponentLookup<BrickHitFlag> _hitLookup;
+
+        private Entity _eventHubEntity;
 
         [BurstCompile]
         private struct BallBrickCollisionJob : ICollisionEventsJob
         {
             [ReadOnly] public ComponentLookup<BallTag> BallLookup;
             [ReadOnly] public ComponentLookup<BrickTag> BrickLookup;
-            [ReadOnly] public ComponentLookup<BrickHitFlag> HitLookup;
 
+            public Entity EventHub;
             public EntityCommandBuffer Ecb;
 
             public void Execute(CollisionEvent collisionEvent)
             {
+                if (EventHub == Entity.Null) return;
+
                 Entity entityA = collisionEvent.EntityA;
                 Entity entityB = collisionEvent.EntityB;
 
@@ -41,11 +43,9 @@ namespace Brick_n_Balls.ECS.Systems
 
                 if (!BrickLookup.HasComponent(otherEntity)) return; // excluding non-brick collision
 
-                if (HitLookup.HasComponent(otherEntity)) return;
-
-                Ecb.AddComponent<BrickHitFlag>(otherEntity); // tag as hit
+                Ecb.AppendToBuffer(EventHub, new BrickHitEvent { Brick = otherEntity });
+                //Ecb.SetComponentEnabled<BrickHitFlag>(otherEntity, true); // tag as hit
                 // notify +1 point in score manager
-                Debug.Log($"[BallBrickCollisionSystem] Ball {ballEntity.Index} hit brick {otherEntity.Index} – added BrickHitFlag.");
             }
         }
 
@@ -56,34 +56,55 @@ namespace Brick_n_Balls.ECS.Systems
 
             _ballLookup = state.GetComponentLookup<BallTag>(isReadOnly: true);
             _brickLookup = state.GetComponentLookup<BrickTag>(isReadOnly: true);
-            _hitLookup = state.GetComponentLookup<BrickHitFlag>(isReadOnly: true);
+
+            _eventHubEntity = Entity.Null;
         }
 
-        public void OnDestroy(ref SystemState state) { }
+        public void OnDestroy(ref SystemState state)
+        {
+            if (state.EntityManager.Exists(_eventHubEntity)) state.EntityManager.DestroyEntity(_eventHubEntity);
+        }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var em = state.EntityManager;
+
+            if (_eventHubEntity == Entity.Null || !em.Exists(_eventHubEntity))
+            {
+                var query = em.CreateEntityQuery(ComponentType.ReadOnly<BrickHitEventHubTag>(), ComponentType.ReadWrite<BrickHitEvent>());
+                if (!query.IsEmpty)
+                {
+                    _eventHubEntity = query.GetSingletonEntity();
+                }
+                else
+                {
+                    _eventHubEntity = em.CreateEntity();
+                    em.AddComponent<BrickHitEventHubTag>(_eventHubEntity);
+                    em.AddBuffer<BrickHitEvent>(_eventHubEntity);
+                }
+            }
+
             SimulationSingleton simulation = SystemAPI.GetSingleton<SimulationSingleton>();
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             _ballLookup.Update(ref state);
             _brickLookup.Update(ref state);
-            _hitLookup.Update(ref state);
 
             var job = new BallBrickCollisionJob
             {
                 BallLookup = _ballLookup,
                 BrickLookup = _brickLookup,
-                HitLookup = _hitLookup,
+                EventHub = _eventHubEntity,
                 Ecb = ecb
             };
 
             state.Dependency = job.Schedule(simulation, state.Dependency);
             state.Dependency.Complete();
 
-            ecb.Playback(state.EntityManager);
+            ecb.Playback(em);
             ecb.Dispose();
         }
+
+        public Entity GetEventHubEntity() => _eventHubEntity;
     }
 }

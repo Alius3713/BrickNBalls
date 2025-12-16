@@ -1,11 +1,12 @@
-using Brick_n_Balls.Bridging;
+using Brick_n_Balls.Core;
 using Brick_n_Balls.ECS.Components;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Physics.Systems;
 
 namespace Brick_n_Balls.ECS.Systems
 {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(PhysicsSystemGroup))]
     [UpdateAfter(typeof(BallOutOfBoundsSystem))]
     public partial struct BallDestroyBridgeSystem : ISystem
     {
@@ -23,22 +24,12 @@ namespace Brick_n_Balls.ECS.Systems
 
             foreach (var (_, entity) in SystemAPI.Query<RefRO<BallDestroyFlag>>().WithEntityAccess())
             {
-                if (!entityManager.HasComponent<BallView>(entity))
-                {
-                    ecb.DestroyEntity(entity);
-                    continue;
-                }
-
-                var ballView = entityManager.GetComponentObject<BallView>(entity);
-                if (ballView != null)
-                {
-                    ballView.HandleOutOfBounds(); // GameManager.Instance.OnBallDestroyed();
-                }
-
+                GameManager.Instance?.OnBallDestroyed();
                 ecb.DestroyEntity(entity);
             }
 
             ecb.Playback(entityManager);
+            ecb.Dispose();
         }
     }
 

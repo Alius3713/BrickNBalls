@@ -18,10 +18,14 @@ namespace Brick_n_Balls.Gameplay
         [Header("Input (New Input System)")]
         [SerializeField] private string _shootActionName = "Attack";
 
+        [SerializeField] private BallAimController _aiming;
+
         private InputAction _shootAction;
 
         private EntityManager _entityManager;
         private Entity _ballPrefabEntity;
+
+        public Transform SpawnPoint => _spawnPoint != null ? _spawnPoint : transform;
 
         private void Awake()
         {
@@ -88,7 +92,8 @@ namespace Brick_n_Balls.Gameplay
         {
             
             var gameManager = GameManager.Instance;
-            if (gameManager != null && !gameManager.CanShoot())
+            if (gameManager == null) return;
+            if (!gameManager.CanShoot())
             {
                 Debug.Log("[BallShootRequest] Cannot shoot – GameManager.CanShoot() == false.");
                 return;
@@ -102,22 +107,23 @@ namespace Brick_n_Balls.Gameplay
 
             var ballEntity = _entityManager.Instantiate(_ballPrefabEntity);
 
-            float3 spawnPos = _spawnPoint != null ? (float3)_spawnPoint.position : (float3)transform.position;
-            Quaternion spawnRot = _spawnPoint != null ? _spawnPoint.rotation : transform.rotation;
+            Transform sp = SpawnPoint;
 
-            var lt = LocalTransform.FromPositionRotationScale(spawnPos, spawnRot, 1f);
+            Vector3 dirWorld = _aiming != null ? _aiming.GetShootDirWorld() : sp.up;
+            float3 dir = math.normalize((float3)dirWorld);
+
+            var lt = LocalTransform.FromPositionRotationScale(sp.position, sp.rotation, 1f);
             _entityManager.SetComponentData(ballEntity, lt);
 
             if (_entityManager.HasComponent<PhysicsVelocity>(ballEntity))
             {
-                float3 dir = math.normalize((float3)(_spawnPoint != null ? _spawnPoint.up : transform.up));
-
                 var vel = _entityManager.GetComponentData<PhysicsVelocity>(ballEntity);
                 vel.Linear = dir * _initialSpeed;
                 _entityManager.SetComponentData(ballEntity, vel);
             }
             
             gameManager?.ConsumeShot();
+            gameManager?.OnBallSpawned();
         }
     }
 }
