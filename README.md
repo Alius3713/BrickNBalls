@@ -67,6 +67,8 @@ Brick-breaker style prototype made for a technical test assignment.
 ## Media
 
 ![Screenshot](Docs/screenshot2.png)
+![Screenshot](Docs/screenshot1.png)
+![Screenshot](Docs/screenshot4.png)
 
 
 
